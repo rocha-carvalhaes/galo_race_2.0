@@ -1,93 +1,81 @@
-# Overview: 2024 - A New Race, New Insights
+# Galo Race 2.0 — My second street race: data engineering & performance analysis
 
-After a year of focused training, I ran my second street race in 2024, and I hit my target: placing within the top 50%! It felt incredible, but as I reviewed my results, new questions arose. I realized that raw placement numbers don't tell the full story—I needed to understand how my performance compared within specific demographic groups, training backgrounds, and competitive tiers.
+## Executive summary — the short story
+I raced the 10 km in 2023 and 2024 and turned a “just finished” result into a real competitive leap.
 
-Now, I want to analyze how my performance compares across specific runner subgroups and explore how advanced statistics might reveal patterns among returning competitors. Could I identify trends or untapped competitive opportunities?
+- 2023 (male 10 km): 948 / 1,320 → 71.8th percentile (below Top 50%)
+- 2024 (male 10 km): 390 / 1,441 → 27.1st percentile (top quartile)
+- Absolute time: from 01:01:59 → to 00:53:13 (-14.2%)
+- Percentile swing: from 71.8 → to 27.1 = (-44.7p.p)
 
-## Objectives
+This README documents the full analysis of that progression, places it within the race-level context, and summarizes the pipeline and technologies used to get these results.
 
-In this next phase, my goals are to:
+---
 
-### - Investigate Placement Across Different Runner Segments
-I'll explore how my performance stacks up against specific runner groups, such as age brackets, those running in teams, and perhaps even solo vs. team runners.
+## Full analysis — my performance (2023 → 2024), male 10 km category
 
-### - Analyze Advanced Statistics for Insightful Comparisons
-Delve into statistics that go beyond averages and percentiles, using techniques like ANOVA to assess performance variance between groups and clustering to find patterns among runners.
+### 1) Raw improvement (time & pace)
+- 2023 time (10 km): 01:01:59 = 3,719 seconds → pace ≈ 6:11.9 /km  
+- 2024 time (10 km): 00:53:13 = 3,193 seconds → pace ≈ 5:19.3 /km  
+- Absolute improvement: 526 seconds = 8 minutes 46 seconds  
+- Relative improvement: 526 / 3,719 ≈ 14.2% faster overall (same ~14.1% faster per km)
 
-### - Predict Returning Runners and Future Placements
-Using historical data, I'll attempt to forecast which runners are likely to participate again and predict their potential placements based on past results.
+### 2) Placement and percentiles (male category)
+- 2023: 948th out of 1,320 male runners → 71.8th percentile (you were in the slower ~72% of male competitors)
+- 2024: 390th out of 1,441 male runners → 27.1st percentile (you are faster than ~73% of male competitors)
+- Net placement gain: 948 - 390 = 558 positions
+- Net percentile gain: 71.8 - 27.1 = 44.7 percentile points
 
-## Methodology
+Conclusion: 14% drop in completion time and reaplacement of negative 44.7 percentile points indicates great success in this project.
 
-### Data Collection and Preparation
+---
 
-The project follows a structured data pipeline to gather and process race data:
+## Market / event highlights (short bullets)
+- Combined dataset used for analysis (2023 + 2024): 19,720 participant records (all distances/genders)
+- Participants by edition:
+  - 2023 total: 8,375 runners
+  - 2024 total: 11,347 runners (+35.5% overall)
+- Distance split (example): 5 km dominated the event (≈77.7% in 2023 → 81.5% in 2024)
+- Gender mix (all distances): 2023 ≈ 50.8% M / 49.2% F → 2024 ≈ 47.9% M / 52.1% F (female participation increased)
+- Male 10 km category: 1,320 (2023) → 1,441 (2024) (+9.2%)
+- Completion-time summary (combined):
+  - Mean completion time ≈ 47.28 minutes
+  - Median completion time ≈ 42.03 minutes
+  - High variance across the full field (std ≈ 20 min), reflecting mixed levels and both 5 km & 10 km times
+- Field got faster overall between editions (median moved toward quicker times).
 
-- **Data Extraction**: Race results are extracted from PDF files (2023 and 2024) using `pdfplumber` and custom PDF parsing with `fitz`
-- **Data Consolidation**: Multi-year datasets are combined into a unified structure with consistent formatting
-- **Feature Engineering**: Enhanced datasets include temporal breakdowns (hours, minutes, seconds), pace calculations, and distance normalization
-- **Data Storage**: Processed datasets are saved as Parquet files for efficient analysis
+---
 
-**Pipeline Components** (`/src`):
-- `get_data.py`: Extracts race results from PDF files using OCR-safe regex patterns
-- `treat_data.py`: Performs feature engineering, including time conversions and pace calculations
-- `main.py`: Orchestrates the end-to-end pipeline for both 2023 and 2024 datasets
+## Methodology, pipeline & technologies used
 
-### Advanced Analysis
+Project architecture (high level)
+- Data source: official race results published as PDF files (one PDF per category/distance)
+- Extraction: custom Python pipeline that reads PDFs and converts results into structured tables
+- Staging / storage: Parquet files for treated outputs (data/treated/results_2023.parquet, results_2024.parquet)
+- Analysis: Jupyter notebooks used for EDA and comparative analysis (notebooks/performance_eda.ipynb, exploratory_analysis_2023.ipynb)
+- Reporting / visualization: interactive exploration in notebooks and Power BI for dashboards (Power BI consumes Parquet/SQLite as needed)
 
-**Current Analysis** (`/notebooks`):
-- `exploratory_analysis_2023.ipynb`: Initial exploration of 2023 race demographics and performance patterns
-- `performance_eda.ipynb`: Comprehensive exploratory data analysis comparing 2023 and 2024 results, examining distribution of times, performance by gender/age, and segment-level insights
+Key project files (implementation)
+- /src/get_path.py — locate raw PDF files by year
+- /src/get_data.py — extract tables from PDFs using:
+  - pdfplumber for table extraction when possible
+  - PyMuPDF (fitz) as a fallback to parse text and reconstruct rows
+  - Custom parsing logic to split rows and fields
+- /src/treat_data.py — feature engineering and type conversions:
+  - Converts time strings to seconds, minutes, hours
+  - Computes pace and numeric fields (pos, num, age, ag, dist_num)
+- /src/save_parquet.py — saves cleaned data to Parquet files
+- /src/main.py — orchestrates the end-to-end pipeline for each year (2023 and 2024)
+- /notebooks — exploratory notebooks that produce the statistics and visualizations used in this README
 
-**Planned Techniques**:
-- **Descriptive Statistics**: Summaries by group (age groups, solo vs. party runners) to understand performance patterns
-- **Comparative Analysis**: Using statistical tests (t-tests, ANOVA) to examine whether performance differs significantly across groups
-- **Cluster Analysis**: K-means and other clustering algorithms to identify natural groupings among runners
+Technologies
+- Python (pandas, pdfplumber, PyMuPDF/fitz, matplotlib, numpy, scipy)
+- Jupyter Notebooks for analysis and visualization
+- Parquet for intermediate data (efficient columnar storage)
+- Power BI for interactive dashboards and reporting (consumes Parquet / SQLite)
+- (Optional) SQLite as a lightweight warehouse for downstream consumption
 
-### Predictive Modeling
+---
 
-- Classification models (Random Forest, Decision Trees) to identify runners likely to return
-- Regression models to forecast 2025 placements for returning competitors
-- Incorporation of external features (weather conditions, training intensity) to refine predictions
-
-### Visualization and Reporting
-
-Power BI remains the primary visualization tool, with interactive reports enabling:
-- Group performance comparisons
-- Returning runner tracking
-- Predictive insights visualization
-
-## Expected Results
-
-By the end of this project, I will have:
-
-- **Nuanced Performance Understanding**: Clear insights into how my results compare within specific demographic and competitive segments
-- **Returning Runner Intelligence**: Patterns and predictors for which runners participate across years
-- **Data-Driven Training Plan**: Targeted insights to optimize training strategy against my competitive landscape
-- **Actionable Predictions**: Forecast placements for 2025 based on historical trends
-
-## Project Structure
-
-```
-galo_race_2.0/
-├── src/                          # Data pipeline modules
-│   ├── main.py                  # Pipeline orchestration
-│   ├── get_data.py              # PDF data extraction
-│   ├── treat_data.py            # Feature engineering
-│   ├── get_path.py              # Path utilities
-│   └── save_parquet.py          # Parquet serialization
-│
-├── notebooks/                    # Analysis and visualization
-│   ├── exploratory_analysis_2023.ipynb
-│   └── performance_eda.ipynb
-│
-└── README.md
-```
-
-## Tech Stack
-
-- **Python 3.x**: Core data processing
-- **pandas**: Data manipulation and analysis
-- **pdfplumber & fitz**: PDF extraction and parsing
-- **Jupyter Notebooks**: Interactive analysis and visualization
-- **Parquet**: Efficient data storage format
+## Final note
+This project is a blend of data engineering and personal performance analytics: extracting hard-to-read results from PDFs, structuring the data for analysis, and turning those numbers into meaningful training feedback.
