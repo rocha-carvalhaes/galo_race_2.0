@@ -3,11 +3,8 @@
 ## Executive summary — the short story
 I raced the 10 km in 2023 and 2024 and turned a “just finished” result into a real competitive leap.
 
-- 2023 (male 10 km): 948 / 1,320 → 71.8th percentile (below Top 50%)
-- 2024 (male 10 km): 390 / 1,441 → 27.1st percentile (top quartile)
-- Absolute time: from 01:01:59 → to 00:53:13 (-14.2%)
-- Percentile swing: from 71.8 → to 27.1 = (-44.7p.p)
-
+<img width="662" height="530" alt="image" src="https://github.com/user-attachments/assets/6a20bbf6-f7e3-4f6e-b4d5-360ae1b97d26" />
+####
 This README documents the full analysis of that progression, places it within the race-level context, and summarizes the pipeline and technologies used to get these results.
 
 ---
