@@ -5,7 +5,7 @@ I raced the 10 km in 2023 and 2024 and turned a “just finished” result into 
 
 <img width="662" height="530" alt="image" src="https://github.com/user-attachments/assets/6a20bbf6-f7e3-4f6e-b4d5-360ae1b97d26" />
 
-This README documents the full analysis of that progression, places it within the race-level context, and summarizes the pipeline and technologies used to get these results.
+##### This README documents the full analysis of that progression, places it within the race-level context, and summarizes the pipeline and technologies used to get these results.
 
 ---
 
